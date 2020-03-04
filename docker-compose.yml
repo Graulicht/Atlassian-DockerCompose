@@ -1,0 +1,53 @@
+version: '3.0'
+
+services:
+
+  database:
+      image: postgres:9.4
+      volumes:
+        - database-data:/var/lib/postgresql/data
+  
+  jira:
+    image: atlassian/jira-software:8.7.0
+    links:
+      - database
+    volumes:
+      - jira-data:/var/atlassian/jira
+    networks:
+      - proxy
+    environment:
+      VIRTUAL_HOST: jira.dev.localhost
+      
+      #confluence:
+      #image: atlassian/confluence-server:6.9.0
+      #    links:
+      #      - database
+      #    volumes:
+      #      - confluence-data:/var/atlassian/confluence
+      #    networks:
+      #      - proxy
+      #    environment:
+      #      VIRTUAL_HOST: confluence.dev.localhost
+      #      VIRTUAL_PORT: "8090"
+       
+  bitbucket: 
+    image: atlassian/bitbucket-server:6.10.0
+    links:
+      - database
+    volumes:
+      - bitbucket-data:/var/atlassian/application-data/bitbucket
+    networks:
+      - proxy
+    environment:
+      VIRTUAL_HOST: bitbucket.dev.localhost
+      VIRTUAL_PORT: 7990
+
+volumes:
+  jira-data:
+          #confluence-data:
+  bitbucket-data:
+  database-data:
+
+networks:
+  proxy:
+    external: true
